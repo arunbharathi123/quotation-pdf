@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-M-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metal Scrap Quotation Generator</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -14,36 +12,37 @@
             background-color: #f3f4f6;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: flex-start; /* Align to top for better content flow on small screens */
             min-height: 100vh;
-            padding: 2rem;
+            padding: 1rem; /* Reduced padding for mobile */
         }
         .container {
             background-color: #ffffff;
-            padding: 2.5rem;
+            padding: 1.5rem; /* Adjusted padding for smaller screens */
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             width: 100%;
             max-width: 900px;
         }
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem; /* Slightly reduced margin */
         }
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: #374151;
+            font-size: 0.9rem; /* Slightly smaller font size for labels on mobile */
         }
         input[type="text"],
         input[type="date"],
         input[type="number"],
         textarea {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.6rem 0.8rem; /* Adjusted padding */
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Adjusted font size */
             color: #1f2937;
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
@@ -56,15 +55,26 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
         textarea {
-            min-height: 80px;
+            min-height: 70px; /* Slightly reduced min-height */
             resize: vertical;
         }
         .item-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 0.1fr;
-            gap: 1rem;
+            grid-template-columns: 1fr; /* Stack columns on small screens */
+            gap: 0.75rem; /* Reduced gap */
             align-items: center;
             margin-bottom: 1rem;
+            padding: 0.75rem; /* Add padding to item rows */
+            border: 1px solid #e5e7eb; /* Add a subtle border */
+            border-radius: 0.5rem;
+        }
+        @media (min-width: 768px) { /* Medium screens and up */
+            .item-row {
+                grid-template-columns: 2fr 1fr 1fr 1fr 0.1fr; /* Original layout for larger screens */
+                gap: 1rem;
+                padding: 0; /* Remove padding for larger screens as it's not needed with grid gaps */
+                border: none; /* Remove border for larger screens */
+            }
         }
         .item-row input {
             margin-bottom: 0;
@@ -76,9 +86,17 @@
             padding: 0.5rem 0.75rem;
             border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Adjusted font size */
             transition: background-color 0.2s ease-in-out;
             height: fit-content;
+            width: 100%; /* Make button full width on small screens */
+            margin-top: 0.5rem; /* Add margin top for button when stacked */
+        }
+        @media (min-width: 768px) {
+            .item-row .remove-item {
+                width: auto; /* Auto width on larger screens */
+                margin-top: 0; /* Remove margin top for button when in grid */
+            }
         }
         .item-row .remove-item:hover {
             background-color: #dc2626;
@@ -86,14 +104,20 @@
         .add-item-btn {
             background-color: #22c55e;
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.7rem 1.2rem; /* Adjusted padding */
             border-radius: 0.5rem;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Adjusted font size */
             font-weight: 600;
             transition: background-color 0.2s ease-in-out;
             margin-top: 1rem;
+            width: 100%; /* Make button full width on small screens */
+        }
+        @media (min-width: 768px) {
+            .add-item-btn {
+                width: auto; /* Auto width on larger screens */
+            }
         }
         .add-item-btn:hover {
             background-color: #16a34a;
@@ -101,15 +125,15 @@
         .generate-btn {
             background-color: #4f46e5;
             color: white;
-            padding: 1rem 2rem;
+            padding: 0.9rem 1.8rem; /* Adjusted padding */
             border-radius: 0.75rem;
             border: none;
             cursor: pointer;
-            font-size: 1.125rem;
+            font-size: 1rem; /* Adjusted font size */
             font-weight: 700;
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
             width: 100%;
-            margin-top: 2rem;
+            margin-top: 1.5rem; /* Adjusted margin top */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         .generate-btn:hover {
@@ -123,27 +147,46 @@
             display: flex;
             justify-content: flex-end;
             margin-top: 1.5rem;
-            font-size: 1.125rem;
+            font-size: 1rem; /* Adjusted font size */
             font-weight: 600;
             color: #1f2937;
+            padding-right: 0.75rem; /* Add some padding to align with item rows */
+        }
+        @media (min-width: 768px) {
+            .total-section {
+                padding-right: 0; /* Remove padding on larger screens */
+            }
         }
         .total-section span {
-            margin-left: 1rem;
+            margin-left: 0.75rem; /* Adjusted margin */
         }
         h1 {
-            font-size: 2.25rem;
+            font-size: 1.8rem; /* Adjusted for mobile */
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem; /* Adjusted margin */
             text-align: center;
         }
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.25rem; /* Original size for larger screens */
+                margin-bottom: 2rem;
+            }
+        }
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem; /* Adjusted for mobile */
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem; /* Adjusted margin */
             border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.4rem; /* Adjusted padding */
+        }
+        @media (min-width: 768px) {
+            h2 {
+                font-size: 1.5rem; /* Original size for larger screens */
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.5rem;
+            }
         }
         .message-box {
             display: none;
@@ -152,25 +195,26 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #fff;
-            padding: 2rem;
+            padding: 1.5rem; /* Adjusted padding */
             border-radius: 0.75rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             z-index: 1000;
             text-align: center;
+            max-width: 90%; /* Max width for message box on mobile */
         }
         .message-box p {
             margin-bottom: 1rem;
-            font-size: 1.125rem;
+            font-size: 1rem; /* Adjusted font size */
             color: #374151;
         }
         .message-box button {
             background-color: #4f46e5;
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.2rem; /* Adjusted padding */
             border-radius: 0.5rem;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Adjusted font size */
             font-weight: 600;
             transition: background-color 0.2s ease-in-out;
         }
@@ -231,13 +275,11 @@
         </form>
     </div>
 
-    <!-- Message Box for alerts -->
     <div id="messageBox" class="message-box">
         <p id="messageText"></p>
         <button id="messageBoxClose">OK</button>
     </div>
 
-    <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Ensure jsPDF is loaded correctly
@@ -466,14 +508,25 @@
                     doc.setTextColor(0, 0, 0);
                     doc.text('PROPRIETOR', 160, yPos);
                     
-                    // Continue with footer
-                    let footerY = 250;
+                    // --- Footer Section START ---
+                    // Define the footer content as an array of strings
+                    const footerContent = [
+                        'Contact: 8610533488, 8248392020',
+                        'No.182, Ramanathapuram, Bunk Back side, Coimbatore-641045',
+                        'Email: satrader98@gmail.com'
+                    ];
+
+                    let footerY = 250; // Starting Y position for the footer (adjust if needed)
+                    const footerX = 25; // X position for the footer (left aligned)
+                    const lineHeight = 6; // Standard line height for the current font size (adjust if needed)
+
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(10);
                     doc.setTextColor(0, 0, 0);
-                    doc.text('Contact: 8610533488, 8248392020', 25, footerY);
-                    doc.text('No.182, Ramanathapuram, Bunk Back side, Coimbatore-641045', 25, footerY + 7);
-                    doc.text('Email: satrader98@gmail.com', 25, footerY + 14);
+                    
+                    // Use doc.text with an array to print multi-line text
+                    doc.text(footerContent, footerX, footerY, { lineHeight: lineHeight });
+                    // --- Footer Section END ---
                     
                     // Save the PDF after image is loaded
                     doc.save(`Quotation_${quotationNumber}.pdf`);
@@ -485,14 +538,25 @@
                     doc.setTextColor(0, 0, 0);
                     doc.text('PROPRIETOR', 160, yPos);
                     
-                    // Continue with footer
-                    let footerY = 250;
+                    // --- Footer Section START (for error case) ---
+                    // Define the footer content as an array of strings
+                    const footerContent = [
+                        'Contact: 8610533488, 8248392020',
+                        'No.182, Ramanathapuram, Bunk Back side, Coimbatore-641045',
+                        'Email: satrader98@gmail.com'
+                    ];
+
+                    let footerY = 250; // Starting Y position for the footer (adjust if needed)
+                    const footerX = 25; // X position for the footer (left aligned)
+                    const lineHeight = 6; // Standard line height for the current font size (adjust if needed)
+
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(10);
                     doc.setTextColor(0, 0, 0);
-                    doc.text('Contact: 8610533488, 8248392020', 25, footerY);
-                    doc.text('No.182, Ramanathapuram, Bunk Back side, Coimbatore-641045', 25, footerY + 7);
-                    doc.text('Email: satrader98@gmail.com', 25, footerY + 14);
+                    
+                    // Use doc.text with an array to print multi-line text
+                    doc.text(footerContent, footerX, footerY, { lineHeight: lineHeight });
+                    // --- Footer Section END ---
                     
                     // Save the PDF without signature
                     doc.save(`Quotation_${quotationNumber}.pdf`);
