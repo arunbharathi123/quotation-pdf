@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metal Scrap Quotation Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 900px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #1f2937;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 0.1fr;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .item-row input {
+            margin-bottom: 0;
+        }
+        .item-row .remove-item {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease-in-out;
+            height: fit-content;
+        }
+        .item-row .remove-item:hover {
+            background-color: #dc2626;
+        }
+        .add-item-btn {
+            background-color: #22c55e;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            margin-top: 1rem;
+        }
+        .add-item-btn:hover {
+            background-color: #16a34a;
+        }
+        .generate-btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1.125rem;
+            font-weight: 700;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            width: 100%;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .generate-btn:hover {
+            background-color: #4338ca;
+            transform: translateY(-2px);
+        }
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+        .total-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .total-section span {
+            margin-left: 1rem;
+        }
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        .message-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            text-align: center;
+        }
+        .message-box p {
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            color: #374151;
+        }
+        .message-box button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .message-box button:hover {
+            background-color: #4338ca;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quotation Generator</h1>
+
+        <form id="quotationForm">
+            <h2>Quotation Details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                <div class="form-group">
+                    <label for="quotationNumber">Quotation Number:</label>
+                    <input type="text" id="quotationNumber" value="Q-001" required>
+                </div>
+                <div class="form-group">
+                    <label for="quotationDate">Date:</label>
+                    <input type="date" id="quotationDate" value="" required>
+                </div>
+                <div class="form-group md:col-span-2">
+                    <label for="clientName">Client Name:</label>
+                    <input type="text" id="clientName" placeholder="e.g., ABC Constructions" required>
+                </div>
+                <div class="form-group md:col-span-2">
+                    <label for="clientAddress">Client Address:</label>
+                    <textarea id="clientAddress" placeholder="e.g., 123 Main St, Anytown, USA"></textarea>
+                </div>
+            </div>
+
+            <h2>Item Details</h2>
+            <div id="itemDetails">
+                <div class="item-row">
+                    <input type="text" class="item-description" placeholder="Item Description (e.g., Copper Scrap)" value="Copper Scrap" required>
+                    <input type="number" class="item-quantity" placeholder="Quantity (e.g., 100)" value="100" min="0" required>
+                    <input type="number" class="item-unit-price" placeholder="Unit Price (e.g., 5.00)" value="5.00" step="0.01" min="0" required>
+                    <input type="text" class="item-total" placeholder="Total" value="500.00" readonly>
+                    <button type="button" class="remove-item">X</button>
+                </div>
+                <div class="item-row">
+                    <input type="text" class="item-description" placeholder="Item Description (e.g., Aluminum Scrap)" value="Aluminum Scrap" required>
+                    <input type="number" class="item-quantity" placeholder="Quantity (e.g., 50)" value="50" min="0" required>
+                    <input type="number" class="item-unit-price" placeholder="Unit Price (e.g., 2.50)" value="2.50" step="0.01" min="0" required>
+                    <input type="text" class="item-total" placeholder="Total" value="125.00" readonly>
+                    <button type="button" class="remove-item">X</button>
+                </div>
+            </div>
+            <button type="button" id="addItemBtn" class="add-item-btn">Add Item</button>
+
+            <div class="total-section">
+                Total Amount: <span id="grandTotal">0.00</span>
+            </div>
+
+            <button type="submit" class="generate-btn">Generate PDF Quotation</button>
+        </form>
+    </div>
+
+    <!-- Message Box for alerts -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="messageBoxClose">OK</button>
+    </div>
+
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Ensure jsPDF is loaded correctly
+        const { jsPDF } = window.jspdf;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set today's date as default for quotationDate
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('quotationDate').value = `${yyyy}-${mm}-${dd}`;
+
+            const quotationForm = document.getElementById('quotationForm');
+            const itemDetailsDiv = document.getElementById('itemDetails');
+            const addItemBtn = document.getElementById('addItemBtn');
+            const grandTotalSpan = document.getElementById('grandTotal');
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            const messageBoxClose = document.getElementById('messageBoxClose');
+
+            // Function to show custom message box
+            function showMessageBox(message) {
+                messageText.textContent = message;
+                messageBox.style.display = 'block';
+            }
+
+            // Function to hide custom message box
+            messageBoxClose.addEventListener('click', () => {
+                messageBox.style.display = 'none';
+            });
+
+            // Function to calculate item total and grand total
+            function calculateTotals() {
+                let grandTotal = 0;
+                const itemRows = itemDetailsDiv.querySelectorAll('.item-row');
+                itemRows.forEach(row => {
+                    const quantityInput = row.querySelector('.item-quantity');
+                    const unitPriceInput = row.querySelector('.item-unit-price');
+                    const totalInput = row.querySelector('.item-total');
+
+                    const quantity = parseFloat(quantityInput.value) || 0;
+                    const unitPrice = parseFloat(unitPriceInput.value) || 0;
+                    const itemTotal = quantity * unitPrice;
+
+                    totalInput.value = itemTotal.toFixed(2);
+                    grandTotal += itemTotal;
+                });
+                grandTotalSpan.textContent = grandTotal.toFixed(2);
+            }
+
+            // Add event listeners for quantity and unit price changes
+            itemDetailsDiv.addEventListener('input', (event) => {
+                if (event.target.classList.contains('item-quantity') || event.target.classList.contains('item-unit-price')) {
+                    calculateTotals();
+                }
+            });
+
+            // Function to add a new item row
+            function addItemRow(description = '', quantity = '', unitPrice = '') {
+                const newRow = document.createElement('div');
+                newRow.classList.add('item-row');
+                newRow.innerHTML = `
+                    <input type="text" class="item-description" placeholder="Item Description" value="${description}" required>
+                    <input type="number" class="item-quantity" placeholder="Quantity" value="${quantity}" min="0" required>
+                    <input type="number" class="item-unit-price" placeholder="Unit Price" value="${unitPrice}" step="0.01" min="0" required>
+                    <input type="text" class="item-total" placeholder="Total" readonly>
+                    <button type="button" class="remove-item">X</button>
+                `;
+                itemDetailsDiv.appendChild(newRow);
+                calculateTotals();
+            }
+
+            // Event listener for "Add Item" button
+            addItemBtn.addEventListener('click', () => addItemRow());
+
+            // Event listener for "Remove Item" button (delegated)
+            itemDetailsDiv.addEventListener('click', (event) => {
+                if (event.target.classList.contains('remove-item')) {
+                    if (itemDetailsDiv.children.length > 1) {
+                        event.target.closest('.item-row').remove();
+                        calculateTotals();
+                    } else {
+                        showMessageBox("You must have at least one item in the quotation.");
+                    }
+                }
+            });
+
+            // Initial calculation on load
+            calculateTotals();
+
+            // Handle form submission and PDF generation
+            quotationForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const quotationNumber = document.getElementById('quotationNumber').value;
+                const quotationDate = document.getElementById('quotationDate').value;
+                const clientName = document.getElementById('clientName').value;
+                const clientAddress = document.getElementById('clientAddress').value;
+                const grandTotal = grandTotalSpan.textContent;
+
+                const items = [];
+                const itemRows = itemDetailsDiv.querySelectorAll('.item-row');
+                itemRows.forEach(row => {
+                    const description = row.querySelector('.item-description').value;
+                    const quantity = row.querySelector('.item-quantity').value;
+                    const unitPrice = row.querySelector('.item-unit-price').value;
+                    const total = row.querySelector('.item-total').value;
+                    if (description && quantity && unitPrice) {
+                        items.push({ description, quantity, unitPrice, total });
+                    }
+                });
+
+                if (items.length === 0) {
+                    showMessageBox("Please add at least one item to generate the quotation.");
+                    return;
+                }
+
+                // Create a new jsPDF instance
+                const doc = new jsPDF();
+
+                // Company Title
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(0, 0, 0); // Ensure black text
+                doc.text('SA TRADERS', 105, 20, null, null, 'center');
+
+                // Tagline
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0); // Ensure black text
+                doc.text('DEALERS IN ALL KINDS OF SCRAPS, PLASTICS & PAPERS', 105, 28, null, null, 'center');
+
+                // Horizontal line
+                doc.setDrawColor(0, 0, 0); // Black line
+                doc.setLineWidth(0.5);
+                doc.line(20, 32, 190, 32);
+
+                // Greeting
+                let yPos = 45;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(11);
+                doc.setTextColor(0, 0, 0); // Ensure black text
+                doc.text('Dear Sir/Madam,', 15, yPos);
+
+                yPos += 10;
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(0, 0, 0); // Ensure black text
+                doc.text('WE HAVE THE BEST & HIGHEST RATE FOR THE FOLLOWING ITEMS', 105, yPos, null, null, 'center');
+                yPos += 7;
+                doc.text('SUBJECT: SCRAP QUOTATION', 105, yPos, null, null, 'center');
+
+                // Items table
+                yPos += 15;
+                const tableStartY = yPos;
+                
+                // Table header
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.setTextColor(0, 0, 0); // Ensure black text
+                doc.text('S.NO', 20, yPos);
+                doc.text('ITEM DESCRIPTION', 70, yPos, null, null, 'center');
+                doc.text('QTY', 130, yPos, null, null, 'center');
+                doc.text('RATE/KG', 160, yPos, null, null, 'center');
+                doc.text('TOTAL', 185, yPos, null, null, 'center');
+
+                yPos += 10;
+
+                // Table rows
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0); // Ensure black text
+                
+                items.forEach((item, index) => {
+                    doc.text(String(index + 1), 20, yPos);
+                    
+                    // Handle long item descriptions
+                    const descLines = doc.splitTextToSize(item.description, 50);
+                    doc.text(descLines[0], 45, yPos);
+                    
+                    doc.text(String(item.quantity), 130, yPos, null, null, 'center');
+                    doc.text(`RS:${parseFloat(item.unitPrice).toFixed(2)}`, 160, yPos, null, null, 'center');
+                    doc.text(`RS:${parseFloat(item.total).toFixed(2)}`, 185, yPos, null, null, 'center');
+                    
+                    yPos += 7;
+                });
+
+                // Table border
+                doc.setDrawColor(0, 0, 0);
+                doc.setLineWidth(0.5);
+                doc.rect(15, tableStartY - 5, 180, yPos - tableStartY + 5);
+                
+                // Vertical lines for table
+                doc.line(35, tableStartY - 5, 35, yPos);  // After S.NO
+                doc.line(115, tableStartY - 5, 115, yPos); // After Description
+                doc.line(145, tableStartY - 5, 145, yPos); // After QTY
+                doc.line(175, tableStartY - 5, 175, yPos); // After Rate
+
+                // Total section
+                yPos += 10;
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0); // Ensure black text
+                doc.text(`GRAND TOTAL: RS:${parseFloat(grandTotal).toFixed(2)}`, 185, yPos, null, null, 'right');
+                yPos += 20;
+
+                // Note section
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.text('NOTE: LOAD LABOUR, TRANSPORTING FOR ALL EXPENSES OUR SIDE', 105, yPos, null, null, 'center');
+
+                yPos += 15;
+                doc.text('THANKING YOU', 105, yPos, null, null, 'center');
+
+                yPos += 25;
+                
+                // Add signature image
+                const signatureImg = new Image();
+                signatureImg.crossOrigin = 'anonymous';
+                signatureImg.onload = function() {
+                    // Add the signature image above PROPRIETOR
+                    doc.addImage(signatureImg, 'JPEG', 140, yPos - 20, 40, 15);
+                    
+                    // Add PROPRIETOR text below signature
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('PROPRIETOR', 160, yPos);
+                    
+                    // Continue with footer
+                    let footerY = 250;
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Contact: 8610533488, 8248392020', 25, footerY);
+                    doc.text('No.182, Ramanathapuram, Bunk Back side, Coimbatore-641045', 25, footerY + 7);
+                    doc.text('Email: satrader98@gmail.com', 25, footerY + 14);
+                    
+                    // Save the PDF after image is loaded
+                    doc.save(`Quotation_${quotationNumber}.pdf`);
+                };
+                signatureImg.onerror = function() {
+                    // If image fails to load, continue without signature
+                    console.log('Signature image failed to load, continuing without signature');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('PROPRIETOR', 160, yPos);
+                    
+                    // Continue with footer
+                    let footerY = 250;
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Contact: 8610533488, 8248392020', 25, footerY);
+                    doc.text('No.182, Ramanathapuram, Bunk Back side, Coimbatore-641045', 25, footerY + 7);
+                    doc.text('Email: satrader98@gmail.com', 25, footerY + 14);
+                    
+                    // Save the PDF without signature
+                    doc.save(`Quotation_${quotationNumber}.pdf`);
+                };
+                signatureImg.src = 'https://i.ibb.co/jk1mYHWh/Smart-Select-20250428-215443-Doc-Scanner.jpg';
+            });
+        });
+    </script>
+</body>
+</html>
